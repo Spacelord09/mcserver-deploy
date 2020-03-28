@@ -8,6 +8,7 @@ deps=(
         curl
         git
         screen
+        sudo
         openjdk-11-jre-headless
 )
 
