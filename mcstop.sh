@@ -52,7 +52,7 @@ for i in "$@"; do
             exit 0
         ;;
         --stop=*)
-            screen_session="${i#*=}"
+            server_session="${i#*=}"
             stop
             exit 0
         ;;
