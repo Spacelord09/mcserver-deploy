@@ -126,6 +126,12 @@ service_setup(){
 
 }
 
+get_stop_script(){
+    wget https://raw.githubusercontent.com/spacelord09/mcserver-deploy/master/mcstop.sh -O "/bin/mcstop.sh"
+    chown root:root /bin/mcstop.sh
+    chmod +x /bin/mcstop.sh
+}
+
 error_handler(){
 	printf "\nAborting\n"
 	exit 1
@@ -152,6 +158,7 @@ cd /opt/$user_name/
 
 download
 systemd_install
+get_stop_script
 accept_eula
 chown -R $user_name:$user_name /opt/$user_name/
 service_setup
