@@ -10,7 +10,6 @@ c_mag=$(tput setaf 5)
 
 console() { # Passes commands to the console.
     if  screen -list | grep -q "$server_session"; then
-        LOG "info" 'Sending ''"'"$*"'"'' to console.'
         screen -S "$server_session" -X stuff ''"$*\n"''
     else
         exit 1
