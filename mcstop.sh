@@ -1,5 +1,13 @@
 #!/bin/bash
 
+normal=$(tput sgr0)
+dim=$(tput dim)
+bold=$(tput bold)
+uline=$(tput smul)
+c_red=$(tput setaf 1)
+c_green=$(tput setaf 2)
+c_mag=$(tput setaf 5)
+
 console() { # Passes commands to the console.
     if  screen -list | grep -q "$server_session"; then
         LOG "info" 'Sending ''"'"$*"'"'' to console.'
@@ -32,8 +40,7 @@ stop() {
 
 # Updates this script from the remote repository.
 self_update(){
-    if [ "$(whoami)" != "root" ]; then printf "The installer/updater requires root privileges to install the midimonster system-wide\n"; exit 1; fi
-    printf "\nDOWNLOAD UPDATE!\n\n"
+    if [ "$(whoami)" != "root" ]; then printf "This script requires root privileges\n"; exit 1; fi
 	wget https://raw.githubusercontent.com/spacelord09/mcserver-deploy/master/mcstop.sh -O "$0"
 	chmod +x "$0"
 }
@@ -57,3 +64,5 @@ for i in "$@"; do
     esac
     shift
 done
+
+exit 0

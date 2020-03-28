@@ -1,4 +1,2 @@
 >Implement mcstop script installer to /bin/
->Implement systemd unit creator
-|> Ask for max/min ram usage
->Implement eula accept gui with whiptail
+>Add some color to shell (or do everything with whiptail..)
