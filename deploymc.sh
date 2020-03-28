@@ -139,7 +139,7 @@ install_dependencies
 clear
 
 # Server name used for screen session
-server_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a server name" 8 78 "" --title "Server name" 3>&1 1>&2 2>&3)
+server_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a server name[Screen Session name]" 8 78 "" --title "Server name" 3>&1 1>&2 2>&3)
 user_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a username" 8 78 mc-$server_name --title "Server user" 3>&1 1>&2 2>&3)
 server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "How much RAM should the server use?" 8 78 4096M --title "RAM" 3>&1 1>&2 2>&3)
 
@@ -157,5 +157,3 @@ chown -R $user_name:$user_name /opt/$user_name/
 service_setup
 
 exit 0
-
-
