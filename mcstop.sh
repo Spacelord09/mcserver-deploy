@@ -16,7 +16,7 @@ console() { # Passes commands to the console.
     fi
 }
 
-stop() {
+stopmc() {
     if screen -list | grep -q "$server_session"; then
         console 'save-all'  # Save worlds.
         sleep "1s"
@@ -37,6 +37,23 @@ stop() {
     fi
 }
 
+stopproxy() {
+    if screen -list | grep -q "$server_session"; then
+        sleep "1s"
+        console 'end'
+    else
+        exit 1
+    fi
+}
+
+
+
+
+
+
+
+
+
 # Updates this script from the remote repository.
 self_update(){
     if [ "$(whoami)" != "root" ]; then printf "This script requires root privileges\n"; exit 1; fi
@@ -53,8 +70,12 @@ for i in "$@"; do
         ;;
         --stop=*)
             server_session="${i#*=}"
-            stop
+            stopmc
             exit 0
+        ;;
+        --stopproxy=*)
+            server_session"${i#*=}"
+            stopproxy
         ;;
         -h|--help)
             printf "\n ${c_green}-h,\t  --help${normal}\t\tShow this message and exit\n"
