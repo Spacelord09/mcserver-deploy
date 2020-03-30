@@ -151,7 +151,7 @@ user_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>"
 server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "How much RAM should the server use?" 8 78 4096M --title "RAM" 3>&1 1>&2 2>&3)
 
 # check if username exist
-if cat /etc/passwd | grep ${user_name}; then error_handler; fi
+if cat /etc/passwd | grep $user_name; then error_handler; fi
 
 # Create user
 /sbin/useradd -r -m -d /opt/$user_name $user_name
@@ -160,7 +160,7 @@ cd /opt/$user_name/
 download
 systemd_install
 get_stop_script
-accept_eula
+[ "$server_type" = "Paper" ] && accept_eula
 chown -R $user_name:$user_name /opt/$user_name/
 service_setup
 
