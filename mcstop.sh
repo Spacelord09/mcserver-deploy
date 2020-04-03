@@ -46,14 +46,6 @@ stopproxy() {
     fi
 }
 
-
-
-
-
-
-
-
-
 # Updates this script from the remote repository.
 self_update(){
     if [ "$(whoami)" != "root" ]; then printf "This script requires root privileges\n"; exit 1; fi
