@@ -139,7 +139,7 @@ get_stop_script(){
 nginx-setup(){
     nginx_server_cfg="/etc/nginx/sites-available/webhooks.conf"
     [ -h "/etc/nginx/sites-enabled/default" ] && unlink "/etc/nginx/sites-enabled/default"
-if [ -e "$nginx_server_cfg" ] then
+if [ -e "$nginx_server_cfg" ]; then
      write_nginx_webhook_cfg
      write_nginx_webhook_script
 else
