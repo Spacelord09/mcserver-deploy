@@ -144,7 +144,7 @@ if [ -e "$nginx_server_cfg" ]; then
      write_nginx_webhook_script
 else
      ask_network_interface
-     write_nginx_server_config
+     write_nginx_server_cfg
      write_nginx_webhook_cfg
      write_webhook_script
 fi
