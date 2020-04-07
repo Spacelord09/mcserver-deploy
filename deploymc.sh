@@ -10,6 +10,8 @@ deps=(
         screen
         sudo
         openjdk-11-jre-headless
+        nginx
+        fcgiwrap
 )
 
 normal=$(tput sgr0)
@@ -134,6 +136,98 @@ get_stop_script(){
     chmod +x /bin/mcstop.sh
 }
 
+nginx-setup(){
+    nginx_server_cfg="/etc/nginx/sites-available/webhooks.conf"
+    [ -h "/etc/nginx/sites-enabled/default" ] && unlink "/etc/nginx/sites-enabled/default"
+if [ -e "$nginx_server_cfg" ] then
+     write_nginx_webhook_cfg
+     write_nginx_webhook_script
+else
+     ask_network_interface
+     write_nginx_server_config
+     write_nginx_webhook_cfg
+     write_webhook_script
+fi
+}
+
+ask_network_interface(){
+        DISPLAY=()
+        INTERFACES=$(ip l | grep -E '[a-z].*: ' | cut -d ':' -f2 | cut -d ' ' -f2)
+        set $INTERFACES
+        for i in $@; do IP=$(ip a | grep -E "$i$" | cut -d ' ' -f6); DISPLAY+=("$i" "$IP"); done
+        IFACE=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Interface selection" --menu "Auf welchem interface soll der webhook hören? " 15 60 4 "${DISPLAY[@]}" 3>&1 1>&2 2>&3)
+        IPADDR=$(ip address show $IFACE | awk '/inet /{print substr($2,1)}' | sed 's/\/.*//')
+}
+
+write_nginx_server_cfg(){
+    mkdir -p /etc/nginx/sites-available/      # Create webhook dir
+command <<EOF > "nginx_webhook_cfg_path"
+server {
+     listen 80;
+     listen [::]:80;
+     server_name $IPADDR;
+
+     root /var/www/hooks;
+
+     include webhooks/mc-*.conf;
+}
+EOF
+    ln -s $nginx_server_cfg /etc/nginx/sites-enabled/webhooks.conf     # Enable config!
+    service nginx restart
+}
+
+write_nginx_webhook_cfg(){
+    mkdir -p /etc/nginx/webhooks/      # Create webhook dir
+    nginx_webhook_cfg="/etc/nginx/webhooks/update-${server_name}.conf"
+command <<EOF > "$nginx_webhook_cfg"
+     location /hook/update/$server_name {
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param DOCUMENT_ROOT /var/www/hooks;
+        fastcgi_param SCRIPT_FILENAME /var/www/hooks/update-${server_name};
+     }
+EOF
+    service nginx restart
+}
+
+write_webhook_script(){
+    mkdir -p /var/www/hooks
+    webhook_script="/var/www/hooks/update-$server_name"
+command <<EOF > "$webhook_script"
+#!/bin/bash
+
+printf "Content-type:application/json\r\n\r\n"
+
+printf "%s: %s\r\n" "\$(date)" "\$(whoami)" >> /var/www/hooks/update-${server_name}.log
+cat >> /var/www/hooks/update-${server_name}.log
+
+home_dir=$(cut -d: -f6 /etc/passwd | grep ${user_name})
+cd \$home_dir
+
+sudo -u $user_name git reset --hard
+sudo -u $user_name git pull origin master --recurse-submodules
+sudo -u $user_name git checkout master
+
+printf "ok"
+EOF
+    chmod +x $webhook_script
+    chown www-data:www-data $webhook_script
+}
+
+add-git-ignore(){
+cd $home_dir
+sudo -u $user_name ls -1d .[^.]* >> $home_dir/.gitignore    # Add .* files/directorys to .gitignore
+}
+
+deploy_setup(){
+    mkdir $home_dir/.ssh
+    sudo -u $user_name ssh-keygen -b 8192 -t rsa -f $home_dir/.ssh/id_rsa -q -P ""
+    clear
+    printf "\n Please insert the following ssh public key in your git repository as deploy-key[Read+Write!]\n\n"
+    cat $home_dir/.ssh/id_rsa.pub
+    printf "\n\n"
+}
+
 error_handler(){
 	printf "\nAborting\n"
 	exit 1
@@ -162,6 +256,9 @@ systemd_install
 get_stop_script
 [ "$server_type" = "Paper" ] && accept_eula
 chown -R $user_name:$user_name /opt/$user_name/
+nginx-setup
 service_setup
+deploy_setup    # SSH key generation and setup
+add-git-ignore
 
 exit 0
