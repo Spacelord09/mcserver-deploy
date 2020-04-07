@@ -249,7 +249,8 @@ server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>
 
 # Create user
 /sbin/useradd -r -m -d /opt/$user_name $user_name
-cd /opt/$user_name/
+home_dir=$(cut -d: -f6 /etc/passwd | grep ${user_name})
+cd $home_dir
 
 download
 systemd_install
