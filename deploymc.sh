@@ -144,7 +144,7 @@ nginx-setup(){
     if [ -e "$nginx_server_cfg" ]; then
         IPADDR=$(cat $nginx_server_cfg | grep server_name | sed 's/\ \ \ \ \ server_name //' | sed 's/\;//')
         write_nginx_webhook_cfg
-        write_nginx_webhook_script
+        write_webhook_script
     else
         ask_network_interface
         write_nginx_server_cfg
