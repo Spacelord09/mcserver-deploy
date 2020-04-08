@@ -227,6 +227,8 @@ add-git-ignore(){
 deploy_setup(){
     sudo -u $user_name mkdir $home_dir/.ssh
     sudo -u $user_name ssh-keygen -b 8192 -t rsa -f $home_dir/.ssh/id_rsa -q -P ""
+    sudo -u $user_name git config --global user.name "$user_name"
+    sudo -u $user_name git config --global user.email "noreply@diacraft.net"
     clear
     printf "\n Please insert the following ssh public key in your git repository as deploy-key${c_red}[Read+Write]${normal}\n${dim}The write access is temporarly needed for the initial commit.${normal}\n\n"
     cat $home_dir/.ssh/id_rsa.pub
