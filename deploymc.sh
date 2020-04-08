@@ -259,13 +259,13 @@ systemd_install
 get_stop_script
 [ "$server_type" = "Paper" ] && accept_eula
 chown -R $user_name:$user_name /opt/$user_name/
+service_setup
 
 if (whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Install Webhook?" --defaultno --yesno "Do you want to install a webhook to automatically update a git repository?" 8 78); then
     nginx_install="1"
     nginx-setup;
 fi
 
-service_setup
 [ "$nginx_install" = "1" ] && deploy_setup    # SSH key generation and setup
 [ "$nginx_install" = "1" ] && add-git-ignore
 
