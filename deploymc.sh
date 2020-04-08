@@ -213,15 +213,15 @@ sudo -u $user_name git checkout master 2>&1
 printf "ok"
 EOF
     chmod +x $webhook_script
-    chown www-data:www-data $webhook_script
     chown -R www-data:www-data /var/www/hooks/
     printf "www-data     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/webhook  # Add sudo permissons
 
 }
 
 add-git-ignore(){
-cd $home_dir
-sudo -u $user_name ls -1d .[^.]* >> $home_dir/.gitignore    # Add .* files/directorys to .gitignore
+    cd $home_dir
+    sudo -u $user_name ls -1d .[^.]* >> $home_dir/.gitignore    # Add .* files/directorys to .gitignore
+    chown $user_name:$user_name $home_dir/.gitignore
 }
 
 deploy_setup(){
