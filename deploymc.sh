@@ -93,18 +93,18 @@ download(){
 systemd_install(){
     systemd_path="/etc/systemd/system/mc-$server_name.service"
     printf "[Unit]\n" > $systemd_path
-    printf "Description=Minecraft Server: %s\n" "$server_name" > $systemd_path
-    printf "After=network.target\n\n" > $systemd_path
-    printf "[Service]\n" > $systemd_path
-    printf "WorkingDirectory=/opt/%s\n\n" "$user_name" > $systemd_path
-    printf "User=%s\n" "$user_name" > $systemd_path
-    printf "Group=%s\n\n" "$user_name" > $systemd_path
-    printf "Restart=always\n\n" > $systemd_path
-    printf "ExecStart=/usr/bin/screen -DmS %s /usr/bin/java -Xmx%s -jar server.jar nogui\n\n" "$server_name" "$server_ram" > $systemd_path
-    [ "$server_type" = "Paper" ] && printf "ExecStop=/bin/mcstop.sh --stopmc=%s" "$server_name" > $systemd_path
-    [ "$server_type" = "Waterfall" ] && printf "ExecStop=/bin/mcstop.sh --stopproxy=%s" "$server_name" > $systemd_path
-    printf "\n\n[Install]\n" > $systemd_path
-    printf "WantedBy=multi-user.target\n" > $systemd_path
+    printf "Description=Minecraft Server: %s\n" "$server_name" >> $systemd_path
+    printf "After=network.target\n\n" >> $systemd_path
+    printf "[Service]\n" >> $systemd_path
+    printf "WorkingDirectory=/opt/%s\n\n" "$user_name" >> $systemd_path
+    printf "User=%s\n" "$user_name" >> $systemd_path
+    printf "Group=%s\n\n" "$user_name" >> $systemd_path
+    printf "Restart=always\n\n" >> $systemd_path
+    printf "ExecStart=/usr/bin/screen -DmS %s /usr/bin/java -Xmx%s -jar server.jar nogui\n\n" "$server_name" "$server_ram" >> $systemd_path
+    [ "$server_type" = "Paper" ] && printf "ExecStop=/bin/mcstop.sh --stopmc=%s" "$server_name" >> $systemd_path
+    [ "$server_type" = "Waterfall" ] && printf "ExecStop=/bin/mcstop.sh --stopproxy=%s" "$server_name" >> $systemd_path
+    printf "\n\n[Install]\n" >> $systemd_path
+    printf "WantedBy=multi-user.target\n" >> $systemd_path
 }
 
 accept_eula(){
