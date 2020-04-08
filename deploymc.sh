@@ -9,6 +9,7 @@ deps=(
         git
         screen
         htop
+        vim
         sudo
         openjdk-11-jre-headless
         nginx
