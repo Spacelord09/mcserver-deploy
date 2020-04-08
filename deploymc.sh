@@ -172,7 +172,7 @@ server {
 
      root /var/www/hooks;
 
-     include webhooks/mc-*.conf;
+     include webhooks/update-*.conf;
 }
 EOF
     ln -s $nginx_server_cfg /etc/nginx/sites-enabled/webhooks.conf     # Enable config!
