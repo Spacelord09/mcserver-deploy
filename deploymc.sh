@@ -231,7 +231,7 @@ deploy_setup(){
     printf "\n Please insert the following ssh public key in your git repository as deploy-key${c_red}[Read+Write]${normal}\n${dim}The write access is temporarly needed for the initial commit.${normal}\n\n"
     cat $home_dir/.ssh/id_rsa.pub
     printf "\nWebhook URL: ${c_red}%s/hook/update/%s${normal}\n\n" "$IPADDR" "$server_name"
-    read -p "Press enter to continue.."
+    read -p "Press enter to exit.."
 }
 
 error_handler(){
