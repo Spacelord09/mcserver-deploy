@@ -203,17 +203,19 @@ printf "Content-type:application/json\r\n\r\n"
 printf "%s: %s\r\n" "\$(date)" "\$(whoami)" >> /var/www/hooks/update-${server_name}.log
 cat >> /var/www/hooks/update-${server_name}.log
 
-home_dir=$(cut -d: -f6 /etc/passwd | grep ${user_name})
-cd \$home_dir
+cd $home_dir
 
-sudo -u $user_name git reset --hard
-sudo -u $user_name git pull origin master --recurse-submodules
-sudo -u $user_name git checkout master
+sudo -u $user_name git reset --hard 2>&1
+sudo -u $user_name git pull origin master --recurse-submodules 2>&1
+sudo -u $user_name git checkout master 2>&1
 
 printf "ok"
 EOF
     chmod +x $webhook_script
     chown www-data:www-data $webhook_script
+    chown -R www-data:www-data /var/www/hooks/
+    printf "www-data     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/webhook  # Add sudo permissons
+
 }
 
 add-git-ignore(){
@@ -222,12 +224,13 @@ sudo -u $user_name ls -1d .[^.]* >> $home_dir/.gitignore    # Add .* files/direc
 }
 
 deploy_setup(){
-    mkdir $home_dir/.ssh
+    sudo -u $user_name mkdir $home_dir/.ssh
     sudo -u $user_name ssh-keygen -b 8192 -t rsa -f $home_dir/.ssh/id_rsa -q -P ""
     clear
     printf "\n Please insert the following ssh public key in your git repository as deploy-key${c_red}[Read+Write]${normal}\n${dim}The write access is temporarly needed for the initial commit.${normal}\n\n"
     cat $home_dir/.ssh/id_rsa.pub
-    printf "\nWebhook URL: ${c_red}%s/hook/update/%s${normal}\n" "$IPADDR" "$server_name"
+    printf "\nWebhook URL: ${c_red}%s/hook/update/%s${normal}\n\n" "$IPADDR" "$server_name"
+    read -p "Press enter to continue.."
 }
 
 error_handler(){
@@ -251,7 +254,7 @@ server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>
 
 # Create user
 /sbin/useradd -r -m -d /opt/$user_name $user_name
-home_dir=$(cut -d: -f6 /etc/passwd | grep ${user_name})
+home_dir="/opt/$user_name"
 cd $home_dir
 
 download
