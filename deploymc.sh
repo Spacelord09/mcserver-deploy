@@ -217,7 +217,7 @@ cat >> /var/www/hooks/update-${server_name}.log
 
 cd $home_dir
 
-sudo -u $user_name git pull origin master --recurse-submodules 2>&1
+sudo -u $user_name git pull origin --recurse-submodules 2>&1
 sudo -u $user_name git checkout master 2>&1
 
 printf "ok"
