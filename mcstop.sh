@@ -66,7 +66,7 @@ for i in "$@"; do
             exit 0
         ;;
         --stopproxy=*)
-            server_session"${i#*=}"
+            server_session="${i#*=}"
             stopproxy
         ;;
         -h|--help)
