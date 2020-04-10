@@ -239,6 +239,7 @@ git commit -am "updated on - \$(date)"
 git push
 git reset
 EOF
+chmod +x $home_dir/git-update.sh
 }
 
 add-git-ignore(){
