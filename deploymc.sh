@@ -112,7 +112,7 @@ systemd_install(){
     printf "Group=%s\n\n" "$user_name" >> $systemd_path
     printf "Restart=always\n\n" >> $systemd_path
     printf "ExecStart=/usr/bin/screen -DmS %s /usr/bin/java -Xmx%s -jar server.jar nogui\n\n" "$server_name" "$server_ram" >> $systemd_path
-    [ "$server_type" = "Paper" ] && printf "ExecStop=/bin/mcstop.sh --stopmc=%s" "$server_name" >> $systemd_path
+    [ "$server_type" = "Paper" ] && printf "ExecStop=/bin/mcstop.sh --stop=%s" "$server_name" >> $systemd_path
     [ "$server_type" = "Waterfall" ] && printf "ExecStop=/bin/mcstop.sh --stopproxy=%s" "$server_name" >> $systemd_path
     printf "\n\n[Install]\n" >> $systemd_path
     printf "WantedBy=multi-user.target\n" >> $systemd_path
