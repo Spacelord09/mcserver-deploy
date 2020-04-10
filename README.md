@@ -1,7 +1,7 @@
 # mcserver-deploy
 
 ```
-wget https://raw.githubusercontent.com/spacelord09/mcserver-deploy/master/deploymc.sh ./
+wget https://raw.githubusercontent.com/spacelord09/mcserver-deploy/master/deploymc.sh
 chmod +x ./deploymc.sh
 ./deploymc.sh
 ```
