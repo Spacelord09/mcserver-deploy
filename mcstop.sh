@@ -1,23 +1,15 @@
 #!/bin/bash
 
-normal=$(tput sgr0)
-dim=$(tput dim)
-bold=$(tput bold)
-uline=$(tput smul)
-c_red=$(tput setaf 1)
-c_green=$(tput setaf 2)
-c_mag=$(tput setaf 5)
-
 console() { # Passes commands to the console.
-    if  screen -list | grep -q "$server_session"; then
-        screen -S "$server_session" -X stuff ''"$*\n"''
+    if  screen -list | grep -q "\.$server_session"; then
+        screen -S "\.$server_session" -X stuff ''"$*\n"''
     else
         exit 1
     fi
 }
 
 stopmc() {
-    if screen -list | grep -q "$server_session"; then
+    if screen -list | grep -q "\.$server_session"; then
         console 'save-all'  # Save worlds.
         sleep "1s"
         console 'title @a actionbar {"text":"Server shutdown in '30's!","color":"dark_red"}'
@@ -32,18 +24,33 @@ stopmc() {
         sleep 0.5s
         console 'title @a actionbar {"text":"Shutdown NOW!","color":"dark_red"}'
         console 'stop'
+    	stop_timeout
     else
         exit 1
     fi
 }
 
 stopproxy() {
-    if screen -list | grep -q "$server_session"; then
+    if screen -list | grep -q "\.$server_session"; then
         sleep "1s"
         console 'end'
+        stop_timeout
     else
         exit 1
     fi
+}
+
+stop_timeout(){
+        while true; do
+                if screen -list | grep -q "\.$server_session"; then
+                        sleep "1s"
+                else
+                        break
+                        echo "done."
+                        sleep "2s"
+                fi
+        done
+
 }
 
 # Updates this script from the remote repository.
