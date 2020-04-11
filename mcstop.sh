@@ -2,7 +2,7 @@
 
 console() { # Passes commands to the console.
     if  screen -list | grep -q "\.$server_session"; then
-        screen -S "\.$server_session" -X stuff ''"$*\n"''
+        screen -S "$server_session" -X stuff ''"$*\n"''
     else
         exit 1
     fi
