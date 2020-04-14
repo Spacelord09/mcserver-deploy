@@ -12,6 +12,9 @@ deps=(
         vim
         sudo
         openjdk-11-jre-headless
+)
+
+deps-webhook=(
         nginx
         fcgiwrap
 )
@@ -72,6 +75,18 @@ ARGS(){
     esac
     shift
 done
+}
+
+install_dependencies_webhook(){
+	for dependency in ${deps-webhook[@]}; do
+		if [ "$(dpkg-query -W -f='${Status}' "$dependency" 2>/dev/null | grep -c "ok installed")" -eq 0 ]; then
+			printf "Installing %s\n" "$dependency"
+			apt-get install -y $dependency
+		else
+			printf "%s already installed!\n" "$dependency"
+		fi
+	done
+	printf "\n"
 }
 
 install_dependencies(){
@@ -362,6 +377,7 @@ service_setup
 
 if (whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Install Webhook?" --defaultno --yesno "Do you want to install a webhook to automatically update a git repository?" 8 78); then
     nginx_install="1"
+    install_dependencies_webhook
     nginx-setup
 fi
 
