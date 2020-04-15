@@ -14,7 +14,7 @@ deps=(
         openjdk-11-jre-headless
 )
 
-deps-webhook=(
+deps_webhook=(
         nginx
         fcgiwrap
 )
@@ -78,7 +78,7 @@ done
 }
 
 install_dependencies_webhook(){
-	for dependency in ${deps-webhook[@]}; do
+	for dependency in ${deps_webhook[@]}; do
 		if [ "$(dpkg-query -W -f='${Status}' "$dependency" 2>/dev/null | grep -c "ok installed")" -eq 0 ]; then
 			printf "Installing %s\n" "$dependency"
 			apt-get install -y $dependency
