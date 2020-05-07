@@ -1,1 +1,1 @@
->Add some color to shell (or do everything with whiptail..)
+>If whiptail exits with code 1, go to exit routine
