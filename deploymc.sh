@@ -108,21 +108,21 @@ self_update(){
 }
 
 download_paper(){
-    server_version=$(curl --silent https://papermc.io/api/v1/paper  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3)
+    server_version=$(curl --silent https://papermc.io/api/v1/paper  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3) || error_handler
     latest_version_tag=$(curl --silent https://papermc.io/api/v1/paper/$server_version | jq -r .builds.latest)
-    wget --progress=dot --content-disposition "https://papermc.io/api/v1/paper/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading paper-$latest_version_tag.jar" 7 50 0
+    wget --progress=dot --content-disposition "https://papermc.io/api/v1/paper/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading paper-$latest_version_tag.jar" 7 50 0 || error_handler
     ln -s ./paper-"$latest_version_tag".jar ./server.jar      # Create symlink to server.jar!
 }
 
 download_waterfall(){
-    server_version=$(curl --silent https://papermc.io/api/v1/waterfall  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3)
+    server_version=$(curl --silent https://papermc.io/api/v1/waterfall  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3) || error_handler
     latest_version_tag=$(curl --silent https://papermc.io/api/v1/waterfall/$server_version | jq -r .builds.latest)
-    wget --progress=dot --content-disposition "https://papermc.io/api/v1/waterfall/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading waterfall-$latest_version_tag.jar" 7 50 0
+    wget --progress=dot --content-disposition "https://papermc.io/api/v1/waterfall/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading waterfall-$latest_version_tag.jar" 7 50 0 || error_handler
     ln -s ./waterfall-"$latest_version_tag".jar ./server.jar     # Create symlink to server.jar!
 }
 
 download(){
-    server_type=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select server" --menu "What do you want to install?" 14 50 6 "Paper" "Minecraft Server" "Waterfall" "Minecraft Proxy(Bungeecord fork)" 3>&1 1>&2 2>&3)
+    server_type=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select server" --menu "What do you want to install?" 14 50 6 "Paper" "Minecraft Server" "Waterfall" "Minecraft Proxy(Bungeecord fork)" 3>&1 1>&2 2>&3) || error_handler
     case "$server_type" in
         Paper)
             download_paper
@@ -205,7 +205,7 @@ ask_network_interface(){
         INTERFACES=$(ip l | grep -E '[a-z].*: ' | cut -d ':' -f2 | cut -d ' ' -f2)
         set $INTERFACES
         for i in $@; do IP=$(ip a | grep -E "$i$" | cut -d ' ' -f6); DISPLAY+=("$i" "$IP"); done
-        IFACE=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Interface selection" --menu "On which interface should the Webhook listen?\n [Probably your internal network!]" 15 60 4 "${DISPLAY[@]}" 3>&1 1>&2 2>&3)
+        IFACE=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Interface selection" --menu "On which interface should the Webhook listen?\n [Probably your internal network!]" 15 60 4 "${DISPLAY[@]}" 3>&1 1>&2 2>&3) || error_handler
         IPADDR=$(ip address show $IFACE | awk '/inet /{print substr($2,1)}' | sed 's/\/.*//')
 }
 
@@ -322,8 +322,9 @@ add-git-ignore(){
 deploy_setup(){
     sudo -u $user_name mkdir $home_dir/.ssh
     sudo -u $user_name ssh-keygen -b 8192 -t rsa -f $home_dir/.ssh/id_rsa -q -P ""
-    sudo -u $user_name git config --global user.name "$user_name"
-    sudo -u $user_name git config --global user.email "noreply@diacraft.net"
+    sudo -u $user_name git config --global  user.name "$user_name"
+    git_email=(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a valid email address" 8 78 "noreply@diacraft.net" --title "GIT Mail Address")
+    sudo -u $user_name git config --global user.email "$git_email"
 }
 
 show_data(){
@@ -357,11 +358,11 @@ install_dependencies
 clear
 
 # Server name used for screen session
-server_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a server name[Screen Session name]" 8 78 "" --title "Server name" 3>&1 1>&2 2>&3)
-user_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a username" 8 78 mc-$server_name --title "Server user" 3>&1 1>&2 2>&3)
+server_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord.de>" --inputbox "Please insert a server name[Screen Session name]" 8 78 "" --title "Server name" 3>&1 1>&2 2>&3) || error_handler
+user_name=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "Please insert a username" 8 78 mc-$server_name --title "Server user" 3>&1 1>&2 2>&3) || error_handler
 # check if username exist
 if cat /etc/passwd | grep $user_name; then error_handler; fi
-server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "How much RAM should the server use?" 8 78 4096M --title "RAM" 3>&1 1>&2 2>&3)
+server_ram=$(whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --inputbox "How much RAM should the server use?" 8 78 4096M --title "RAM" 3>&1 1>&2 2>&3) || error_handler
 
 # Create user
 /sbin/useradd -r -m -d /opt/$user_name $user_name
