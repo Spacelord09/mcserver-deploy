@@ -109,14 +109,14 @@ self_update(){
 
 download_paper(){
     server_version=$(curl --silent https://papermc.io/api/v1/paper  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3)
-    latest_version_tag=$(curl --silent https://papermc.io/api/v1/paper/$server_version | grep -Po '"'"latest"'"\s*:\s*"\K([^"]*)')
+    latest_version_tag=$(curl --silent https://papermc.io/api/v1/paper/$server_version | jq -r .builds.latest)
     wget --progress=dot --content-disposition "https://papermc.io/api/v1/paper/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading paper-$latest_version_tag.jar" 7 50 0
     ln -s ./paper-"$latest_version_tag".jar ./server.jar      # Create symlink to server.jar!
 }
 
 download_waterfall(){
     server_version=$(curl --silent https://papermc.io/api/v1/waterfall  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3)
-    latest_version_tag=$(curl --silent https://papermc.io/api/v1/waterfall/$server_version | grep -Po '"'"latest"'"\s*:\s*"\K([^"]*)')
+    latest_version_tag=$(curl --silent https://papermc.io/api/v1/waterfall/$server_version | jq -r .builds.latest)
     wget --progress=dot --content-disposition "https://papermc.io/api/v1/waterfall/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "mcdeploy by. Spacelord <admin@spacelord09.de>" --gauge "Downloading waterfall-$latest_version_tag.jar" 7 50 0
     ln -s ./waterfall-"$latest_version_tag".jar ./server.jar     # Create symlink to server.jar!
 }
