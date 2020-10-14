@@ -346,8 +346,10 @@ show_data(){
 }
 
 error_handler(){
-	printf "\nAborting\n"
-	exit 1
+    printf "\nAborting"
+    for i in {1..3}; do sleep 0.3s && printf "." && sleep 0.3s; done
+    printf "\n"
+    exit 1
 }
 
 ################################################ Main #################################################
