@@ -58,7 +58,7 @@ self_update(){
 
 download(){
     server_version=$(curl --silent https://papermc.io/api/v1/$server_type  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "deploymc-updater by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3) || error_handler "Whiptail exited with code 1 (Probably terminated by the user)"
-    latest_version_tag=$(curl --silent https://papermc.io/api/v1/$server_type/$server_version | grep -Po '"'"latest"'"\s*:\s*"\K([^"]*)')
+    latest_version_tag=$(curl --silent https://papermc.io/api/v1/$server_type/$server_version | jq '.builds.latest')
     wget --progress=dot --content-disposition "https://papermc.io/api/v1/$server_type/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "deploymc-updater by. Spacelord <admin@spacelord09.de>" --gauge "Downloading $server_type-$latest_version_tag.jar" 7 50 0 || error_handler "Whiptail exited with code 1 (Probably terminated by the user)"
 }
 
