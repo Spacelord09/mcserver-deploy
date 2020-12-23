@@ -30,7 +30,8 @@ ARGS(){
             exit 0
         ;;
         -h|--help|*)
-            printf "\n ${c_green}-h,\t  --help${normal}\t\tShow this message and exit\n"
+            printf " ${c_green}-u,\t  --update${normal}\t\tUpdating this Script to the newest version."
+            printf "\n ${c_green}-h,\t  --help${normal}\t\tShow this message and exit.\n"
             exit 0
         ;;
     esac
@@ -59,7 +60,10 @@ self_update(){
 download(){
     server_version=$(curl --silent https://papermc.io/api/v1/$server_type  | jq '.versions | map(., "") |. []' | xargs whiptail --backtitle "deploymc-updater by. Spacelord <admin@spacelord09.de>" --title "Select your server version" --noitem --menu "choose" 16 78 10 3>&1 1>&2 2>&3) || error_handler "Whiptail exited with code 1 (Probably terminated by the user)"
     latest_version_tag=$(curl --silent https://papermc.io/api/v1/$server_type/$server_version | jq '.builds.latest')
-    wget --progress=dot --content-disposition "https://papermc.io/api/v1/$server_type/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "deploymc-updater by. Spacelord <admin@spacelord09.de>" --gauge "Downloading $server_type-$latest_version_tag.jar" 7 50 0 || error_handler "Whiptail exited with code 1 (Probably terminated by the user)"
+
+    download_file="$server_type"-"$server_version"-"$latest_version_tag"".jar"
+    # \/ wget: --content-disposition removed due to api instabilities of filenames. Switched to -O
+    wget --progress=dot -O ./$download_file "https://papermc.io/api/v1/$server_type/$server_version/latest/download" 2>&1 | sed -u '1,/^$/d;s/.* \([0-9]\+\)% .*/\1/' | whiptail --backtitle "deploymc-updater by. Spacelord <admin@spacelord09.de>" --gauge "Downloading $download_file" 7 50 0 || error_handler "Whiptail exited with code 1 (Probably terminated by the user)"
 }
 
 error_handler(){
@@ -130,7 +134,8 @@ rm -f *.oldversion
 mv "$server_realpath" "$server_realpath".oldversion
 
 # Create symlink to server.jar!
-ln -s ./"$server_type"-"$latest_version_tag".jar ./server.jar
+ln -s ./$download_file ./server.jar
+
 
 # Set file owner
 chown -R $user_name:$user_name ./
