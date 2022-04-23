@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "DEPRECATED!"
+exit "1"
+
 normal=$(tput sgr0)
 dim=$(tput dim)
 bold=$(tput bold)
